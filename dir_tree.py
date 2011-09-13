@@ -1,4 +1,9 @@
-"""This module provides class DirTree which represents the directory tree."""
+"""
+This module provides class DirTree which represents the directory tree and class
+DirList which represents the list of possibly unrelated directories.
+
+"""
+
 from __future__ import print_function
 import os
 import sys
@@ -305,7 +310,7 @@ class DirList(object):
     def list_from_file(self, path):
         """
         Method that populates self.items with directories listed with their
-        destination directoreis (see documentation for more details) in a file.
+        destination directories (see documentation for more details) in a file.
 
         @param path: path of the file listing directories
         @type path: string
@@ -323,10 +328,33 @@ class DirList(object):
                 self.items.append(_DirNode(full_path, dest))
 
     def list_by_prefix(self, source, dest, delimiter="__"):
+        """
+        Method that populates self.items with directories contained in given
+        directory having their destination directories contained in their name
+        (see documentation for more details).
+
+        @param source: path to the source directory containing special-named
+                       directories
+        @type source: string
+        @param dest: path to the destination directory (were to look for
+                     matches)
+        @type dest: string
+        @param delimiter: delimiter used for spliting directories' names
+        @type delimiter: string
+        @raise NoMatchError: when one or more parsed patterns doesn't match any
+                             directory in the dest. directory (or destination
+                             directory doesn't exist at all)
+
+        """
+
         for item in os.listdir(source):
             parts = item.split(delimiter)
-            #find match for all parts except the last
-            pass
+            matched = dest
+            for part in parts[:-1]:
+                matched = _find_matching_item(part, matched)
+            self.items.append((_DirNode(parts[-1]), matched))
+
+
 
     def archive_list(self, compression="gzip", verbose="False"):
         """
