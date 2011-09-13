@@ -1,0 +1,2 @@
+rewrite files compression (problems with already archived ones)
+    -- skip if all files are archives?
